@@ -8,13 +8,19 @@ public class Cell : MonoBehaviour
     public bool isAlive = false;
     public int numNeighbors = 0;
 
+    public static float _updRadius;
+
+    void Awake() {
+        _updRadius = GetComponent<MeshRenderer>().bounds.size.x;        
+    }
+
     
-    
-    
+
     //! enables the positioning of the cell sprite if the alive param is enabled
     // use the boolean to toggle
     public void SetAlive(bool alive)
     {
+
         //! This method apparently works better because it loads all the cells at once, and simply turns on/off their state
         //! instead of destroying GameObjects all the time.
         
@@ -23,11 +29,13 @@ public class Cell : MonoBehaviour
         if(alive)
         // enable spriteRenderer
         {
-            GetComponent<SpriteRenderer>().enabled = true;
+            // GetComponent<SpriteRenderer>().enabled = true;
+            GetComponent<MeshRenderer>().enabled = true;
         }
         else // disable spriteRenderer
         {
-            GetComponent<SpriteRenderer>().enabled = false;
+            // GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<MeshRenderer>().enabled = false;
         }
     }
 }

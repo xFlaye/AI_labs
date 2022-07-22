@@ -21,15 +21,39 @@ public class Game : MonoBehaviour
 
     public bool simulationEnabled = false;
 
+    //! send references to HexGlobals static class
+    public static float _hexWidth;
+    public static float _hexHeight;
+
     //! call the Cell class and have it hold the screen dimensions
     Cell[,] grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];
+
+    void Awake() 
+    {
+        //! establish the radius of the hexes based on the size of the object
+        //! and pass that to the HexGlobals.
+        _hexWidth = cellObject.GetComponent<MeshRenderer>().bounds.size.x;
+        _hexHeight = cellObject.GetComponent<MeshRenderer>().bounds.size.y;
+        
+    }
     // Start is called before the first frame update
     void Start()
     {
         
+        Debug.Log("hex radius and halfWidth" + HexGlobals.Radius + ","+ HexGlobals.HalfWidth);
+        
         Debug.Log("width" + Screen.width);
         // Step 1
-        PlaceCells(startType);
+        // PlaceCells(startType);
+
+
+        for (int x=0; x < SCREEN_WIDTH; x++)
+                    {
+                        for (int y=0; y < SCREEN_HEIGHT; y++)
+                        {
+                            CreateCells(x, y);
+                        }
+                    }
         
     }
 
@@ -57,8 +81,8 @@ public class Game : MonoBehaviour
         
     }
 
-    //! ===========>        SAVE PATTERN
     // doesn't get accessed outside the class
+    //! ===========>        SAVE PATTERN =======================================================================
     private void SavePattern()
     {
         string path = "patterns"; // create directory in root of project
@@ -105,8 +129,7 @@ public class Game : MonoBehaviour
 
     }
 
-    //! ===========>        LOAD PATTERN
-
+    //! ===========>        LOAD PATTERN =======================================================================
     private void LoadPattern()
     {
         string path = "patterns";
@@ -155,7 +178,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    //! Add user input
+    //! ===========> Add user input =======================================================================
     void UserInput()
     {
         // 0 for left mouse
@@ -206,7 +229,7 @@ public class Game : MonoBehaviour
         
     }
 
-    //! STEP 1: iterate over area and place cells randomly, either alive or dead
+    //! STEP 1: iterate over area and place cells randomly, either alive or dead <===========
     void PlaceCells(int type)
     {
         switch(type)
@@ -223,7 +246,8 @@ public class Game : MonoBehaviour
                             grid[x,y] = cell;
                             //! call info from Cell script
                             
-                            grid[x,y].SetAlive(RandomAliveCell());
+                            // grid[x,y].SetAlive(RandomAliveCell());
+                            grid[x,y].SetAlive(true); //!  <============ fill screen completely
                         }
                     }
 
@@ -286,6 +310,23 @@ public class Game : MonoBehaviour
 
 
         }
+    }
+
+    void CreateCells(int x, int y)
+    {
+        Vector3 position;
+        position.x = (x + y * 0.5f - y / 2) * HexGlobals.Width;
+        position.y = y * HexGlobals.RowHeight;
+        
+
+        Cell cell = Instantiate(cellObject, new Vector3(position.x,position.y,0), Quaternion.identity);
+        cell.name = "x: "+ x + " y: "+ y;
+        grid[x,y] = cell;
+        //! call info from Cell script
+        
+        grid[x,y].SetAlive(RandomAliveCell());
+        // grid[x,y].SetAlive(true); //!  <============ fill screen completely
+
     }
 
     bool RandomAliveCell()

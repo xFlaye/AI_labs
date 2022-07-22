@@ -4,26 +4,35 @@ using UnityEngine;
 
 public class camRatio : MonoBehaviour
 {
-    public float errorMargin;
+
+    
+    public float errorMargin; 
     public float camDepth = -10;
 
     // Start is called before the first frame update
     void Start()
     {
+        //! for Hexagons
+        // call within the method; don't define outside
+        float hexPos = HexGlobals.Radius;
+
         float aspectRatio = Camera.main.aspect; // width divided by height
         float camSize = Camera.main.orthographicSize; 
         float correctPositionX = aspectRatio * camSize;
-        Camera.main.transform.position = new Vector3(correctPositionX + errorMargin, camSize + errorMargin, camDepth);
+        //! square
+        // Camera.main.transform.position = new Vector3(correctPositionX + errorMargin, camSize + errorMargin, camDepth);
+
+        //! hex
+        Camera.main.transform.position = new Vector3(correctPositionX - hexPos, camSize - hexPos, camDepth);
+        
+        
+        
+        
+        // Value checks
         // Debug.Log("Screen Width : " + Screen.width);
         // Debug.Log("Screen Height : " + Screen.height);
         // Debug.Log("aspect ratio : " + aspectRatio);
+        // Debug.Log("hexpos : " + hexPos);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     
 }
