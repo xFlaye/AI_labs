@@ -8,8 +8,9 @@ using System.Xml.Serialization;
 public class Game : MonoBehaviour
 {
     //! change this to a dynamic setup using camRatio 
-    private static int SCREEN_WIDTH = 64;
-    private static int SCREEN_HEIGHT = 48;
+    
+    private static int SCREEN_HEIGHT;
+    private static int SCREEN_WIDTH;
 
     // Set timer
     public float speed = 0.1f; // define speed variable. Higher value means slower
@@ -25,8 +26,11 @@ public class Game : MonoBehaviour
     public static float _hexWidth;
     public static float _hexHeight;
 
+    private int orgHeight = 0;
+
     //! call the Cell class and have it hold the screen dimensions
-    Cell[,] grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];
+    // Cell[,] grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];
+    Cell[,] grid;
 
     void Awake() 
     {
@@ -34,19 +38,57 @@ public class Game : MonoBehaviour
         //! and pass that to the HexGlobals.
         _hexWidth = cellObject.GetComponent<MeshRenderer>().bounds.size.x;
         _hexHeight = cellObject.GetComponent<MeshRenderer>().bounds.size.y;
+
+        SCREEN_HEIGHT = (int)Camera.main.orthographicSize;
+        SCREEN_WIDTH =   (int)SCREEN_HEIGHT * Screen.width / Screen.height;
+
+        Debug.LogFormat("Original screen width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        
+
+        
         
     }
     // Start is called before the first frame update
     void Start()
     {
+        //! DYNAMIC CAMERA SETUP
+        // Still glitches a bit due to the static int variables, but close enough for purposes
+        // Change camera size in Inspector for different results. 
+        // 12, 24, 48, 96. Bigger value = smaller hexes
+        int orgHeight = SCREEN_HEIGHT;
+
+        Debug.LogFormat("org height {0}", orgHeight);
         
+        float tmpBuffer = ((SCREEN_HEIGHT / HexGlobals.HalfWidth) - SCREEN_HEIGHT);
+        Debug.LogFormat("udpated buffer {0}, Radius {3}, rowheight {1}, height {2}, width {4}" , tmpBuffer, HexGlobals.RowHeight, HexGlobals.Height, HexGlobals.Radius, HexGlobals.Width);
+        Debug.LogFormat("hexwidth {0}   hexheight {1}", _hexWidth, _hexHeight);
+        float tmpHeight = SCREEN_HEIGHT * HexGlobals.RowHeight;
+        Debug.LogFormat("udpated height {0}" , tmpHeight);
+        tmpHeight = Mathf.Ceil(tmpHeight);
+        Debug.LogFormat("floor height {0}" , tmpHeight);
+
+        SCREEN_HEIGHT = (int)tmpHeight - ((int)tmpBuffer-(int)HexGlobals.RowHeight);
+
+        float tmpWidthBuffer = (SCREEN_HEIGHT * HexGlobals.Height) - (SCREEN_HEIGHT * HexGlobals.Width);
+        tmpWidthBuffer = (SCREEN_WIDTH / Camera.main.aspect)* (_hexWidth-HexGlobals.HalfWidth);
+
+        Debug.LogFormat("tmpwidthbuffer {0}", tmpWidthBuffer);
+
+        SCREEN_WIDTH =    (int)tmpWidthBuffer*2;
+
+
+
+          
         Debug.Log("hex radius and halfWidth" + HexGlobals.Radius + ","+ HexGlobals.HalfWidth);
         
-        Debug.Log("width" + Screen.width);
+        Debug.LogFormat("width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
+        Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
         // Step 1
+        grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];   
+
         // PlaceCells(startType);
-
-
+        
         for (int x=0; x < SCREEN_WIDTH; x++)
                     {
                         for (int y=0; y < SCREEN_HEIGHT; y++)
@@ -54,9 +96,13 @@ public class Game : MonoBehaviour
                             CreateCells(x, y);
                         }
                     }
+
+
+        
         
     }
 
+   
     // Update is called once per frame
     void Update()
     {
