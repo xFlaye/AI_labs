@@ -12,6 +12,9 @@ public class Game : MonoBehaviour
     private static int SCREEN_HEIGHT;
     private static int SCREEN_WIDTH;
 
+    // private float actualHeight;
+    // private float actualWidth;
+
     // Set timer
     public float speed = 0.1f; // define speed variable. Higher value means slower
     private float timer = 0;
@@ -26,7 +29,6 @@ public class Game : MonoBehaviour
     public static float _hexWidth;
     public static float _hexHeight;
 
-    private int orgHeight = 0;
 
     //! call the Cell class and have it hold the screen dimensions
     // Cell[,] grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];
@@ -40,9 +42,15 @@ public class Game : MonoBehaviour
         _hexHeight = cellObject.GetComponent<MeshRenderer>().bounds.size.y;
 
         SCREEN_HEIGHT = (int)Camera.main.orthographicSize;
-        SCREEN_WIDTH =   (int)SCREEN_HEIGHT * Screen.width / Screen.height;
+        SCREEN_WIDTH =   (int)SCREEN_HEIGHT * Screen.width / Screen.height; // basically SCREEN_HEIGTH * aspect ratio   
 
-        Debug.LogFormat("Original screen width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
+        // Debug.LogFormat("Original screen width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        // actualHeight = Camera.main.orthographicSize;
+        // actualWidth = actualHeight * Screen.width/Screen.height;
+        // float actualAspect = Camera.main.aspect;
+
+        // Debug.LogFormat("actual screen width {0} actual height {1}  aspect {2}" ,actualWidth, actualHeight, actualAspect);
 
         
 
@@ -53,37 +61,23 @@ public class Game : MonoBehaviour
     void Start()
     {
         //! DYNAMIC CAMERA SETUP
-        // Still glitches a bit due to the static int variables, but close enough for purposes
-        // Change camera size in Inspector for different results. 
-        // 12, 24, 48, 96. Bigger value = smaller hexes
-        int orgHeight = SCREEN_HEIGHT;
-
-        Debug.LogFormat("org height {0}", orgHeight);
+        float properHexWidth = SCREEN_WIDTH / HexGlobals.HalfWidth;
+        SCREEN_WIDTH = Mathf.CeilToInt(properHexWidth);
         
-        float tmpBuffer = ((SCREEN_HEIGHT / HexGlobals.HalfWidth) - SCREEN_HEIGHT);
-        Debug.LogFormat("udpated buffer {0}, Radius {3}, rowheight {1}, height {2}, width {4}" , tmpBuffer, HexGlobals.RowHeight, HexGlobals.Height, HexGlobals.Radius, HexGlobals.Width);
-        Debug.LogFormat("hexwidth {0}   hexheight {1}", _hexWidth, _hexHeight);
-        float tmpHeight = SCREEN_HEIGHT * HexGlobals.RowHeight;
-        Debug.LogFormat("udpated height {0}" , tmpHeight);
-        tmpHeight = Mathf.Ceil(tmpHeight);
-        Debug.LogFormat("floor height {0}" , tmpHeight);
+        float properHexHeight = (SCREEN_HEIGHT * HexGlobals.Height) / HexGlobals.RowHeight;
 
-        SCREEN_HEIGHT = (int)tmpHeight - ((int)tmpBuffer-(int)HexGlobals.RowHeight);
-
-        float tmpWidthBuffer = (SCREEN_HEIGHT * HexGlobals.Height) - (SCREEN_HEIGHT * HexGlobals.Width);
-        tmpWidthBuffer = (SCREEN_WIDTH / Camera.main.aspect)* (_hexWidth-HexGlobals.HalfWidth);
-
-        Debug.LogFormat("tmpwidthbuffer {0}", tmpWidthBuffer);
-
-        SCREEN_WIDTH =    (int)tmpWidthBuffer*2;
+       
+        SCREEN_HEIGHT = (int)properHexHeight;
 
 
-
-          
-        Debug.Log("hex radius and halfWidth" + HexGlobals.Radius + ","+ HexGlobals.HalfWidth);
+        // Debug.LogFormat("Radius {0}, rowheight {1}, height {2}, width {3}, extraheight{4}, edge {5}" , 
+        //                 HexGlobals.Radius, HexGlobals.RowHeight, HexGlobals.Height,  HexGlobals.Width, HexGlobals.ExtraHeight, HexGlobals.Edge);
+        // Debug.LogFormat("proper hex height {0}", properHexHeight);          
+        // Debug.LogFormat("hex radius {0},  halfWidth {1}, rowHeight {2}", HexGlobals.Radius, HexGlobals.HalfWidth, HexGlobals.RowHeight);
         
-        Debug.LogFormat("width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
-        Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
+        // Debug.LogFormat("width {0} , height {1}, proper hexWidth {2}" , SCREEN_WIDTH, SCREEN_HEIGHT, properHexWidth);
+        // Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
+
         // Step 1
         grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];   
 
@@ -231,7 +225,9 @@ public class Game : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             // capture position of mouse in world to an XY value
-            Vector2 mousePoint = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
+            var mousePos = Input.mousePosition;
+            mousePos.z = 0;
+            Vector3 mousePoint = Camera.main.ScreenToWorldPoint(mousePos); 
 
             int x = Mathf.RoundToInt(mousePoint.x);
             int y = Mathf.RoundToInt(mousePoint.y);
@@ -360,6 +356,7 @@ public class Game : MonoBehaviour
 
     void CreateCells(int x, int y)
     {
+        //! Creating the hex grid
         Vector3 position;
         position.x = (x + y * 0.5f - y / 2) * HexGlobals.Width;
         position.y = y * HexGlobals.RowHeight;
@@ -396,7 +393,8 @@ public class Game : MonoBehaviour
                 int numNeighbors = 0; // num of LIVE cells
                 
                 // check boundaries of screen. If greater than SCREEN_HEIGHT
-                // NORTH direction
+                
+                // NORTH direction                
                 if (y + 1 < SCREEN_HEIGHT)
                 {
                     //! references Cell class, thus the .isAlive works
@@ -405,6 +403,7 @@ public class Game : MonoBehaviour
                         numNeighbors++;
                     }
                 }
+                
 
                 // EAST direction
                 if (x + 1 < SCREEN_WIDTH)
@@ -415,7 +414,7 @@ public class Game : MonoBehaviour
                     }
                 }
 
-                // SOUTH direction
+                // SOUTH direction                
                 if (y - 1 >= 0)
                 {
                     //! references Cell class, thus the .isAlive works
@@ -424,7 +423,7 @@ public class Game : MonoBehaviour
                         numNeighbors++;
                     }
                 }
-
+                
                 // WEST direction
                 if (x - 1 >= 0)
                 {

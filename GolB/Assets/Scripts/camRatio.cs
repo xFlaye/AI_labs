@@ -17,8 +17,8 @@ public class CamRatio : MonoBehaviour
         float hexPos = HexGlobals.Radius;
 
         float aspectRatio = Camera.main.aspect; // width divided by height
-        float camSize = Camera.main.orthographicSize; 
-        float correctPositionX = aspectRatio * camSize;
+        float camSize = Camera.main.orthographicSize; // screen HEIGHT
+        float correctPositionX = aspectRatio * camSize; // camera WIDTH
         //! square
         // Camera.main.transform.position = new Vector3(correctPositionX + errorMargin, camSize + errorMargin, camDepth);
 
