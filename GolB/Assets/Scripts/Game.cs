@@ -23,6 +23,8 @@ public class Game : MonoBehaviour
 
     public int startType;
 
+    // public int numberOfHexes = (int)Camera.main.orthographicSize;
+
     public bool simulationEnabled = false;
 
     //! send references to HexGlobals static class
@@ -60,13 +62,14 @@ public class Game : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //! DYNAMIC CAMERA SETUP
+        //! DYNAMIC CAMERA SETUP       
+
+        // Screen Width
         float properHexWidth = SCREEN_WIDTH / HexGlobals.HalfWidth;
         SCREEN_WIDTH = Mathf.CeilToInt(properHexWidth);
         
-        float properHexHeight = (SCREEN_HEIGHT * HexGlobals.Height) / HexGlobals.RowHeight;
-
-       
+        // Screen Height
+        float properHexHeight = (SCREEN_HEIGHT * HexGlobals.Height) / HexGlobals.RowHeight;       
         SCREEN_HEIGHT = (int)properHexHeight;
 
 
@@ -91,9 +94,6 @@ public class Game : MonoBehaviour
                         }
                     }
 
-
-        
-        
     }
 
    
@@ -384,6 +384,7 @@ public class Game : MonoBehaviour
         return false;
     }
 
+    //! Neigbhors <===================================
     void CountNeighbors()
     {
         for (int x = 0; x < SCREEN_WIDTH; x++)
@@ -394,7 +395,8 @@ public class Game : MonoBehaviour
                 
                 // check boundaries of screen. If greater than SCREEN_HEIGHT
                 
-                // NORTH direction                
+                // NORTH direction    
+                //? NE            
                 if (y + 1 < SCREEN_HEIGHT)
                 {
                     //! references Cell class, thus the .isAlive works
@@ -477,24 +479,57 @@ public class Game : MonoBehaviour
         }
     }
 
+    //! GOL Rules <================================
+
     void PopulationControl()
     {
         for (int x = 0; x < SCREEN_WIDTH; x++)
         {
             for (int y = 0; y < SCREEN_HEIGHT; y++)
             {
-                //! APPLY LOGIC
+                //! APPLY LOGIC to grid
                 /*
                     - Any live cell with 2 or 3 live neighbors, survives
                     - Any dead cell with 3 live neighbors becomes a live cell
                     - All other live cells die in the next generation; all other dead cells remain dead
                 */
 
-                if (grid[x,y].isAlive)
+                // if (grid[x,y].isAlive)
+                // {
+                //     // - Cell is alive
+                //     //! check numNeighbors; if not 2 or 3 live neighbors, set alive to false
+                //     if (grid[x,y].numNeighbors != 2 && grid[x,y].numNeighbors != 3)
+                //     {
+                //         grid[x,y].SetAlive(false);
+                //     }
+
+                // }
+                // else
+                // {
+                //     // - Cell is dead
+                //     if (grid[x,y].numNeighbors == 3)
+                //     {
+                //         grid[x,y].SetAlive(true);
+                //     }
+
+                // }
+
+
+                //! HEX Rules
+                /*
+                    	1. Live Cells with 1 or 0 neighbors - dies 
+	                    2. Live Cells with 2 neighbors - lives
+	                    3. Live Cells with >= 3 cells - dies
+                        4. Dead Cells with 2 Live neighbors - lives
+
+
+
+                */
+                 if (grid[x,y].isAlive)
                 {
                     // - Cell is alive
-                    //! check numNeighbors; if not 2 or 3 live neighbors, set alive to false
-                    if (grid[x,y].numNeighbors != 2 && grid[x,y].numNeighbors != 3)
+                    //! check numNeighbors; if not exactly 2 live neighbors, set alive to false
+                    if (grid[x,y].numNeighbors != 2 || grid[x,y].numNeighbors != 3)
                     {
                         grid[x,y].SetAlive(false);
                     }
@@ -503,7 +538,7 @@ public class Game : MonoBehaviour
                 else
                 {
                     // - Cell is dead
-                    if (grid[x,y].numNeighbors == 3)
+                    if (grid[x,y].numNeighbors == 2)
                     {
                         grid[x,y].SetAlive(true);
                     }
