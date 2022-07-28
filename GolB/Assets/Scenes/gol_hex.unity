@@ -179,7 +179,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 24
+  orthographic size: 96
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -224,8 +224,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showMain: 0
   showSub: 1
-  gridSizeX: 64
-  gridSizeY: 48
+  gridSizeX: 48
+  gridSizeY: 24
   startX: -0.5
   startY: -0.5
   startZ: 0
@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f70f6a9e2a4a1a247879e600cf7f5a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  errorMargin: 0
+  errorMargin: -1
   camDepth: -10
 --- !u!1 &1300713058
 GameObject:
@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b67deaac479024e94ebc96bde8f177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.5
+  speed: 0.1
   cellObject: {fileID: -3176785955176345165, guid: 4103c36b1c9d78f4eae972301da8f502, type: 3}
   startType: 0
   simulationEnabled: 0

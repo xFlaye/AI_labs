@@ -12,6 +12,8 @@ public class Game : MonoBehaviour
     private static int SCREEN_HEIGHT;
     private static int SCREEN_WIDTH;
 
+    static float sin60 = Mathf.Sqrt(3f) * 0.5f; // inner radius from center of hex
+
     // private float actualHeight;
     // private float actualWidth;
 
@@ -78,7 +80,7 @@ public class Game : MonoBehaviour
         // Debug.LogFormat("proper hex height {0}", properHexHeight);          
         // Debug.LogFormat("hex radius {0},  halfWidth {1}, rowHeight {2}", HexGlobals.Radius, HexGlobals.HalfWidth, HexGlobals.RowHeight);
         
-        // Debug.LogFormat("width {0} , height {1}, proper hexWidth {2}" , SCREEN_WIDTH, SCREEN_HEIGHT, properHexWidth);
+        Debug.LogFormat("width {0} , height {1}, proper hexWidth {2}" , SCREEN_WIDTH, SCREEN_HEIGHT, properHexWidth);
         // Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
 
         // Step 1
@@ -116,7 +118,7 @@ public class Game : MonoBehaviour
                 timer += Time.deltaTime;
             }
         }
-        // check UserInput for state of board
+        //! check UserInput for state of board
         UserInput();      
         
     }
@@ -229,8 +231,12 @@ public class Game : MonoBehaviour
             mousePos.z = 0;
             Vector3 mousePoint = Camera.main.ScreenToWorldPoint(mousePos); 
 
+            Debug.LogFormat("Mouse X {0} === Mouse Y {1}", mousePoint.x, mousePoint.y);
+
             int x = Mathf.RoundToInt(mousePoint.x);
             int y = Mathf.RoundToInt(mousePoint.y);
+
+            Debug.LogFormat("Mouse X Rounded {0} === Mouse Y Rounded {1}", x, y);
 
             // check that within bounds of grid
 
@@ -364,6 +370,14 @@ public class Game : MonoBehaviour
 
         Cell cell = Instantiate(cellObject, new Vector3(position.x,position.y,0), Quaternion.identity);
         cell.name = "x: "+ x + " y: "+ y;
+
+        // Parent each instantiated cell to the main board Game object
+        cell.transform.SetParent(this.transform);
+
+        // make cells static. This helps optimize the playback a bit
+        cell.gameObject.isStatic = true;
+
+        
         grid[x,y] = cell;
         //! call info from Cell script
         

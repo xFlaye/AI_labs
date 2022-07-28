@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2039259162204885746}
   - component: {fileID: 4298703637204313656}
   - component: {fileID: -3176785955176345165}
+  - component: {fileID: -1214682811967399565}
   m_Layer: 0
   m_Name: hex
   m_TagString: Untagged
@@ -55,7 +56,7 @@ MeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
@@ -98,4 +99,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAlive: 0
   numNeighbors: 0
-  _hexRadius: 0
+--- !u!64 &-1214682811967399565
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2353390696130512877}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4866372484537245367, guid: 30d17a907d651574e955af4e97882190, type: 3}
