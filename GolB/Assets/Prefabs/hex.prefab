@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4adf9c62e437e384cb766699871ca96c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAlive: 0
+  isAlive: 1
   numNeighbors: 0
 --- !u!64 &-1214682811967399565
 MeshCollider:

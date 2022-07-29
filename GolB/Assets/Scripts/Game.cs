@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 //! to output files in XML
 using System.IO;
 using System.Xml.Serialization;
@@ -37,6 +38,10 @@ public class Game : MonoBehaviour
     //! call the Cell class and have it hold the screen dimensions
     // Cell[,] grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];
     Cell[,] grid;
+
+    RaycastHit hitInfo;
+
+  
 
     void Awake() 
     {
@@ -83,6 +88,8 @@ public class Game : MonoBehaviour
         Debug.LogFormat("width {0} , height {1}, proper hexWidth {2}" , SCREEN_WIDTH, SCREEN_HEIGHT, properHexWidth);
         // Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
 
+        
+        
         // Step 1
         grid = new Cell[SCREEN_WIDTH, SCREEN_HEIGHT];   
 
@@ -223,6 +230,61 @@ public class Game : MonoBehaviour
     //! ===========> Add user input =======================================================================
     void UserInput()
     {
+        /*  Create a setup that will calculate proper position of each hex cell
+            and return the value in order to "draw" the cells on the board
+        */
+
+        //  Debug.Log("Mouse position" + Input.mousePosition);
+        // this only works in ortho and gives worldPosition on the same plane as camer'as near clipping plane
+        //Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Debug.LogFormat("World point: {0}", worldPoint);
+
+        try
+        {
+           
+
+            if(Input.GetMouseButtonDown(0))
+            {         
+                
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                // feed into physics system
+                Physics.Raycast(ray,out hitInfo);
+                
+                GameObject cell = hitInfo.collider.gameObject;
+                MeshRenderer mr = cell.GetComponent<MeshRenderer>();
+                Cell hexAlive = cell.GetComponent<Cell>();
+
+                //! this toggles the cell on the grid to the inverse of what it is. Elegant code
+                // grid[x,y].SetAlive(!grid[x,y].isAlive);
+
+                Debug.Log("Raycast hit: " + cell.name);
+                if(hexAlive.isAlive==true)
+                {
+                    hexAlive.isAlive = false;
+                    mr.enabled = false;
+
+                }
+                else
+                {
+                    hexAlive.isAlive = true;
+                    mr.enabled = true;
+ 
+                }
+                    
+                }
+   
+        }
+        //! error catching if clicking outside of game board
+        catch (NullReferenceException) 
+        {
+            Debug.Log("Out of bounds");
+        }
+
+        
+        
+
+        
+        /* WILL WORK ONLY WITH 2D OBJECTS ON A SQUARE GRID
         // 0 for left mouse
         if (Input.GetMouseButtonDown(0))
         {
@@ -247,6 +309,7 @@ public class Game : MonoBehaviour
                 grid[x,y].SetAlive(!grid[x,y].isAlive);
             }
         }
+        */
         
         //! create a toggle using the spacebar
         if (Input.GetKeyDown(KeyCode.Space))
