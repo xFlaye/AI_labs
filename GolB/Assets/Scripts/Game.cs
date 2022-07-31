@@ -13,11 +13,6 @@ public class Game : MonoBehaviour
     private static int SCREEN_HEIGHT;
     private static int SCREEN_WIDTH;
 
-    static float sin60 = Mathf.Sqrt(3f) * 0.5f; // inner radius from center of hex
-
-    // private float actualHeight;
-    // private float actualWidth;
-
     // Set timer
     public float speed = 0.1f; // define speed variable. Higher value means slower
     private float timer = 0;
@@ -25,8 +20,6 @@ public class Game : MonoBehaviour
     public Cell cellObject;
 
     public int startType;
-
-    // public int numberOfHexes = (int)Camera.main.orthographicSize;
 
     public bool simulationEnabled = false;
 
@@ -53,18 +46,7 @@ public class Game : MonoBehaviour
         SCREEN_HEIGHT = (int)Camera.main.orthographicSize;
         SCREEN_WIDTH =   (int)SCREEN_HEIGHT * Screen.width / Screen.height; // basically SCREEN_HEIGTH * aspect ratio   
 
-        // Debug.LogFormat("Original screen width {0} and height {1}" , SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        // actualHeight = Camera.main.orthographicSize;
-        // actualWidth = actualHeight * Screen.width/Screen.height;
-        // float actualAspect = Camera.main.aspect;
-
-        // Debug.LogFormat("actual screen width {0} actual height {1}  aspect {2}" ,actualWidth, actualHeight, actualAspect);
-
-        
-
-        
-        
+                
     }
     // Start is called before the first frame update
     void Start()
@@ -78,16 +60,8 @@ public class Game : MonoBehaviour
         // Screen Height
         float properHexHeight = (SCREEN_HEIGHT * HexGlobals.Height) / HexGlobals.RowHeight;       
         SCREEN_HEIGHT = (int)properHexHeight;
-
-
-        // Debug.LogFormat("Radius {0}, rowheight {1}, height {2}, width {3}, extraheight{4}, edge {5}" , 
-        //                 HexGlobals.Radius, HexGlobals.RowHeight, HexGlobals.Height,  HexGlobals.Width, HexGlobals.ExtraHeight, HexGlobals.Edge);
-        // Debug.LogFormat("proper hex height {0}", properHexHeight);          
-        // Debug.LogFormat("hex radius {0},  halfWidth {1}, rowHeight {2}", HexGlobals.Radius, HexGlobals.HalfWidth, HexGlobals.RowHeight);
-        
+     
         Debug.LogFormat("width {0} , height {1}, proper hexWidth {2}" , SCREEN_WIDTH, SCREEN_HEIGHT, properHexWidth);
-        // Debug.LogFormat("screen width {0} screen height {1} Aspect ratio {2}", Screen.width, Screen.height, Camera.main.aspect);
-
         
         
         // Step 1
@@ -99,7 +73,7 @@ public class Game : MonoBehaviour
                     {
                         for (int y=0; y < SCREEN_HEIGHT; y++)
                         {
-                            CreateCells(x, y);
+                            CreateCells(startType, x, y);
                         }
                     }
 
@@ -230,19 +204,12 @@ public class Game : MonoBehaviour
     //! ===========> Add user input =======================================================================
     void UserInput()
     {
-        /*  Create a setup that will calculate proper position of each hex cell
-            and return the value in order to "draw" the cells on the board
-        */
 
-        //  Debug.Log("Mouse position" + Input.mousePosition);
-        // this only works in ortho and gives worldPosition on the same plane as camer'as near clipping plane
-        //Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Debug.LogFormat("World point: {0}", worldPoint);
-
-        try
+        // Prevent outOfBounds errors
+		try
         {
            
-
+			//! Allow user to toggle between alive and dead cells with LMB
             if(Input.GetMouseButtonDown(0))
             {         
                 
@@ -250,6 +217,7 @@ public class Game : MonoBehaviour
                 // feed into physics system
                 Physics.Raycast(ray,out hitInfo);
                 
+				// Select the prefab components of each hex and check the SetAlive function in Cell class
                 GameObject cell = hitInfo.collider.gameObject;
                 MeshRenderer mr = cell.GetComponent<MeshRenderer>();
                 Cell hexAlive = cell.GetComponent<Cell>();
@@ -279,39 +247,8 @@ public class Game : MonoBehaviour
         {
             Debug.Log("Out of bounds");
         }
-
         
-        
-
-        
-        /* WILL WORK ONLY WITH 2D OBJECTS ON A SQUARE GRID
-        // 0 for left mouse
-        if (Input.GetMouseButtonDown(0))
-        {
-            // capture position of mouse in world to an XY value
-            var mousePos = Input.mousePosition;
-            mousePos.z = 0;
-            Vector3 mousePoint = Camera.main.ScreenToWorldPoint(mousePos); 
-
-            Debug.LogFormat("Mouse X {0} === Mouse Y {1}", mousePoint.x, mousePoint.y);
-
-            int x = Mathf.RoundToInt(mousePoint.x);
-            int y = Mathf.RoundToInt(mousePoint.y);
-
-            Debug.LogFormat("Mouse X Rounded {0} === Mouse Y Rounded {1}", x, y);
-
-            // check that within bounds of grid
-
-            if (x >= 0 && y >= 0 && x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
-            {
-                // We are in bounds
-                //! this toggles the cell on the grid to the inverse of what it is. Elegant code
-                grid[x,y].SetAlive(!grid[x,y].isAlive);
-            }
-        }
-        */
-        
-        //! create a toggle using the spacebar
+        //! create a toggle using the spacebar to start/pause simulation
         if (Input.GetKeyDown(KeyCode.Space))
         {
             simulationEnabled = !simulationEnabled;
@@ -332,12 +269,23 @@ public class Game : MonoBehaviour
 
 
         //! clear screen
-        // if (Input.GetKeyDown(KeyCode.C))
-        // {
-        //     PlaceCells(5);
-            
-        // }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ClearBoard();            
+        }
         
+    }
+
+    void ClearBoard()
+    {
+         // iterate over cells
+        for (int y=0; y < SCREEN_HEIGHT; y++)
+        {
+            for (int x=0; x < SCREEN_WIDTH; x++)
+            {
+                grid[x,y].SetAlive(false);
+            }
+        }
     }
 
     //! STEP 1: iterate over area and place cells randomly, either alive or dead <===========
@@ -423,7 +371,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    void CreateCells(int x, int y)
+    void CreateCells(int type, int x, int y)
     {
         //! Creating the hex grid
         Vector3 position;
@@ -443,9 +391,31 @@ public class Game : MonoBehaviour
         
         grid[x,y] = cell;
         //! call info from Cell script
+
+        // type options
+
+        switch(type)
+        {
+            case 1:
+            // Random
+            grid[x,y].SetAlive(RandomAliveCell());
+            // grid[x,y].SetAlive(true); //!  <============ fill screen completely
+            break;
+
+            case 2:
+            grid[x,y].SetAlive(true); //!  <============ fill screen completely
+            break;
+
+            default: 
+            // empty
+            grid[x,y].SetAlive(false);
+
+            break;
+
+        }
         
-        grid[x,y].SetAlive(RandomAliveCell());
-        // grid[x,y].SetAlive(true); //!  <============ fill screen completely
+       
+        
 
     }
 
@@ -461,7 +431,7 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    //! Neigbhors <===================================
+    //! Neigbhors <===================================  GAME LOGIC
     void CountNeighbors()
     {
         for (int x = 0; x < SCREEN_WIDTH; x++)
