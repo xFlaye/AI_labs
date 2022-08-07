@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAlive: 1
   numNeighbors: 0
+  hexMaterial: {fileID: 2100000, guid: c495ebd1e85fc5f448b379c842ceaab3, type: 2}
 --- !u!64 &-1214682811967399565
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -413,10 +413,6 @@ public class Game : MonoBehaviour
             break;
 
         }
-        
-       
-        
-
     }
 
     bool RandomAliveCell()
@@ -441,7 +437,8 @@ public class Game : MonoBehaviour
                 int numNeighbors = 0; // num of LIVE cells
                 
                 // check boundaries of screen. If greater than SCREEN_HEIGHT
-                
+
+                /* ===================================================
                 // NORTH direction    
                 //? NE            
                 if (y + 1 < SCREEN_HEIGHT)
@@ -518,6 +515,85 @@ public class Game : MonoBehaviour
                     }
                 }
 
+                ============================================= */
+
+               
+                // LEFT
+                if (x - 1 >= 0)
+                {
+                    if (grid[x - 1, y].isAlive)
+                    {
+                        numNeighbors++;
+                    }
+                }
+
+                // RIGHT
+                if (x + 1 < SCREEN_WIDTH)
+                {
+                    if (grid[x + 1, y].isAlive)
+                    {
+                        numNeighbors++;
+                    }
+                }
+
+                // UP
+                         
+                if (y + 1 < SCREEN_HEIGHT)
+                {
+                    //! references Cell class, thus the .isAlive works
+                    if (grid[x, y + 1].isAlive)
+                    {
+                        numNeighbors++;
+                    }
+                }
+
+                // DOWN             
+                if (y - 1 >= 0)
+                {
+                    //! references Cell class, thus the .isAlive works
+                    if (grid[x, y - 1].isAlive)
+                    {
+                        numNeighbors++;
+                    }
+                }
+
+                if(x % 2 == 0) {
+                    if (y - 1 >= 0){
+                        if (x - 1 >= 0){
+                            if (grid[x - 1, y - 1].isAlive){
+                                numNeighbors++;
+                            }
+                        if (x + 1 < SCREEN_WIDTH){
+                            if (grid[x + 1, y - 1].isAlive){
+                                numNeighbors++;
+                            }
+                        }
+                        }
+                    }
+                }
+                else {
+                    if(y + 1 < SCREEN_HEIGHT){
+                        if(x - 1 >= 0){
+                            if (grid[x - 1, y + 1].isAlive){
+                                numNeighbors++;
+                            }
+                        }
+                        if(x + 1 < SCREEN_WIDTH){
+                            if (grid[x + 1, y + 1].isAlive){
+                                numNeighbors++;
+                            }
+                        }
+                    }
+                }
+
+                
+
+                 
+                
+                
+
+                
+
                 // establish the number of numNeigbors each cell has and display in Inspector
                 //! forward it to the referenced Cell i.e. grid, global var numNeighbors in Cell.cs
                 grid[x,y].numNeighbors = numNeighbors;
@@ -534,7 +610,7 @@ public class Game : MonoBehaviour
         {
             for (int y = 0; y < SCREEN_HEIGHT; y++)
             {
-                //! APPLY LOGIC to grid
+                //! APPLY LOGIC to  square grid
                 /*
                     - Any live cell with 2 or 3 live neighbors, survives
                     - Any dead cell with 3 live neighbors becomes a live cell
@@ -576,7 +652,7 @@ public class Game : MonoBehaviour
                 {
                     // - Cell is alive
                     //! check numNeighbors; if not exactly 2 live neighbors, set alive to false
-                    if (grid[x,y].numNeighbors != 2 || grid[x,y].numNeighbors != 3)
+                    if (grid[x,y].numNeighbors < 2 || grid[x,y].numNeighbors > 2)
                     {
                         grid[x,y].SetAlive(false);
                     }

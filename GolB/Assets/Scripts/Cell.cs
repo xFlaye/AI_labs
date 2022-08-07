@@ -7,6 +7,9 @@ public class Cell : MonoBehaviour
     //! bool sets checkbox; true = checked
     public bool isAlive = false;
     public int numNeighbors = 0;
+    [SerializeField] private Material hexMaterial;
+
+    float cellAge = 0;
 
     public static float _updRadius;
 
@@ -31,11 +34,15 @@ public class Cell : MonoBehaviour
         {
             // GetComponent<SpriteRenderer>().enabled = true;
             GetComponent<MeshRenderer>().enabled = true;
+            // cellAge += 0.03f;
+            // hexMaterial.color = new Color(0,cellAge,cellAge);
         }
         else // disable spriteRenderer
         {
             // GetComponent<SpriteRenderer>().enabled = false;
             GetComponent<MeshRenderer>().enabled = false;
+            
+            // hexMaterial.color = new Color(cellAge,0,cellAge);
         }
     }
 }
