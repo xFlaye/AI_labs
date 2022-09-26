@@ -303,7 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.1
   cellObject: {fileID: -3176785955176345165, guid: 4103c36b1c9d78f4eae972301da8f502, type: 3}
-  startType: 0
+  startType: 1
   simulationEnabled: 0
 --- !u!4 &1300713060
 Transform:

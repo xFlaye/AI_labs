@@ -290,6 +290,7 @@ public class Game : MonoBehaviour
 
     //! STEP 1: iterate over area and place cells randomly, either alive or dead <===========
     void PlaceCells(int type)
+    // works on SQUARE GRID
     {
         switch(type)
         {
@@ -372,6 +373,7 @@ public class Game : MonoBehaviour
     }
 
     void CreateCells(int type, int x, int y)
+    // works on HEXAGONAL GRID
     {
         //! Creating the hex grid
         Vector3 position;
@@ -652,7 +654,7 @@ public class Game : MonoBehaviour
                 {
                     // - Cell is alive
                     //! check numNeighbors; if not exactly 2 live neighbors, set alive to false
-                    if (grid[x,y].numNeighbors < 2 || grid[x,y].numNeighbors > 2)
+                    if (grid[x,y].numNeighbors != 2 || grid[x,y].numNeighbors > 2)
                     {
                         grid[x,y].SetAlive(false);
                     }
